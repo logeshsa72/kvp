@@ -1,0 +1,9 @@
+-- AlterTable
+ALTER TABLE `calllog` MODIFY `report` ENUM('INTERESTED', 'NOTINTERESTED', 'FOLLOWUP', 'CALL') NULL;
+
+-- AlterTable
+ALTER TABLE `leaddetails` ADD COLUMN `comment` VARCHAR(191) NULL;
+
+-- AlterTable
+ALTER TABLE `leadmaster` ADD COLUMN `Report` ENUM('INTERESTED', 'NOTINTERESTED', 'FOLLOWUP', 'CALL') NULL,
+    ADD COLUMN `followupDate` DATETIME(3) NULL;

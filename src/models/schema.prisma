@@ -1,0 +1,354 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["clientExtensions"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Page {
+  id          Int          @id @default(autoincrement())
+  name        String
+  link        String?
+  type        PageType
+  RoleOnPage  RoleOnPage[]
+  active      Boolean      @default(true)
+  PageGroup   PageGroup?   @relation(fields: [pageGroupId], references: [id])
+  pageGroupId Int?
+}
+
+model Company {
+  id             Int              @id @default(autoincrement())
+  companyId      String           @unique @default(uuid())
+  name           String
+  code           String?
+  gstNo          String?
+  contactName    String?
+  contactMobile  BigInt
+  contactEmail   String?
+  branch         Branch[]
+  country        Country[]
+  active         Boolean          @default(true)
+  Department     Department[]
+  Role           Role[]
+  Subscription   Subscription[]
+  finYear        FinYear[]
+  leadCategories LeadCategories[]
+}
+
+model Subscription {
+  id        Int      @id @default(autoincrement())
+  Company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId Int
+  validFrom DateTime
+  expireAt  DateTime
+  code      String
+  maxUsers  Int
+}
+
+model Branch {
+  id               Int                @id @default(autoincrement())
+  branchName       String
+  branchCode       String?
+  contactName      String?
+  contactMobile    BigInt
+  contactEmail     String?
+  company          Company            @relation(fields: [companyId], references: [id])
+  companyId        Int
+  active           Boolean            @default(true)
+  EmployeeCategory EmployeeCategory[]
+  UserOnBranch     UserOnBranch[]
+  Employee         Employee[]
+  idPrefix         String?
+  idSequence       String?
+  tempPrefix       String?
+  tempSequence     String?
+  prefixCategory   PrefixCategory?
+}
+
+model UserOnBranch {
+  id       Int    @id @default(autoincrement())
+  Branch   Branch @relation(fields: [branchId], references: [id])
+  branchId Int
+  User     User   @relation(fields: [userId], references: [id])
+  userId   Int
+}
+
+model Role {
+  id          Int          @id @default(autoincrement())
+  name        String
+  company     Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId   Int
+  User        User[]
+  RoleOnPage  RoleOnPage[]
+  active      Boolean      @default(true)
+  defaultRole Boolean      @default(false)
+
+  @@unique([companyId, name])
+}
+
+model RoleOnPage {
+  id     Int     @id @default(autoincrement())
+  role   Role    @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  roleId Int
+  page   Page    @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  pageId Int
+  read   Boolean @default(false)
+  create Boolean @default(false)
+  edit   Boolean @default(false)
+  delete Boolean @default(false)
+
+  @@unique([roleId, pageId])
+}
+
+model User {
+  id                  Int            @id @default(autoincrement())
+  username            String         @unique
+  email               String?
+  Employee            Employee?      @relation(fields: [employeeId], references: [id])
+  password            String
+  role                Role?          @relation(fields: [roleId], references: [id])
+  roleId              Int?
+  otp                 String?
+  active              Boolean        @default(true)
+  UserOnBranch        UserOnBranch[]
+  employeeId          Int?
+  AllocationCreatedBy Allocation[]   @relation(name: "createdBy")
+  Allocation          Allocation[]
+}
+
+model Employee {
+  id                 Int               @id @default(autoincrement())
+  name               String
+  email              String            @unique
+  regNo              String            @unique
+  chamberNo          String
+  department         Department?       @relation(fields: [departmentId], references: [id])
+  departmentId       Int?
+  joiningDate        DateTime
+  fatherName         String?
+  dob                DateTime?
+  gender             Gender?
+  maritalStatus      MaritalStatus?
+  bloodGroup         BloodGroup?
+  panNo              String?
+  consultFee         String?
+  salaryPerMonth     String
+  commissionCharges  String?
+  mobile             BigInt?
+  accountNo          String?
+  ifscNo             String?
+  branchName         String?
+  degree             String?
+  specialization     String?
+  localAddress       String?
+  localCity          City              @relation("localCity", fields: [localCityId], references: [id])
+  localCityId        Int
+  localPincode       Int?
+  permAddress        String?
+  permCity           City?             @relation("permCity", fields: [permCityId], references: [id])
+  permCityId         Int?
+  permPincode        Int?
+  active             Boolean           @default(true)
+  image              Bytes?            @db.LongBlob
+  Branch             Branch?           @relation(fields: [branchId], references: [id])
+  branchId           Int?
+  EmployeeCategory   EmployeeCategory? @relation(fields: [employeeCategoryId], references: [id])
+  employeeCategoryId Int?
+  permanent          Boolean           @default(false)
+  leavingReason      String?
+  leavingDate        DateTime?
+  canRejoin          Boolean           @default(true)
+  rejoinReason       String?
+  User               User[]
+}
+
+model FinYear {
+  id        Int      @id @default(autoincrement())
+  from      DateTime
+  to        DateTime
+  Company   Company? @relation(fields: [companyId], references: [id])
+  companyId Int?
+  active    Boolean  @default(true)
+}
+
+model EmployeeCategory {
+  id              Int        @id @default(autoincrement())
+  name            String
+  code            String
+  Branch          Branch?    @relation(fields: [branchId], references: [id])
+  branchId        Int?
+  active          Boolean    @default(true)
+  defaultCategory Boolean    @default(false)
+  Employee        Employee[]
+}
+
+model Country {
+  id        Int     @id @default(autoincrement())
+  name      String
+  code      String
+  state     State[]
+  active    Boolean @default(true)
+  Company   Company @relation(fields: [companyId], references: [id])
+  companyId Int
+}
+
+model State {
+  id        Int     @id @default(autoincrement())
+  name      String
+  code      String
+  gstNo     String
+  country   Country @relation(fields: [countryId], references: [id])
+  countryId Int
+  city      City[]
+  active    Boolean @default(true)
+}
+
+model City {
+  id              Int        @id @default(autoincrement())
+  name            String
+  code            String
+  state           State      @relation(fields: [stateId], references: [id])
+  stateId         Int
+  active          Boolean    @default(true)
+  doctorLocalCity Employee[] @relation(name: "localCity")
+  doctorPermCity  Employee[] @relation(name: "permCity")
+}
+
+model Department {
+  id        Int        @id @default(autoincrement())
+  name      String
+  code      String
+  active    Boolean    @default(true)
+  doctor    Employee[] @relation()
+  Company   Company    @relation(fields: [companyId], references: [id])
+  companyId Int
+}
+
+enum PageType {
+  Masters
+  Transactions
+  AdminAccess
+}
+
+model PageGroup {
+  id     Int      @id @default(autoincrement())
+  type   PageType
+  name   String
+  Page   Page[]
+  active Boolean  @default(true)
+}
+
+enum PrefixCategory {
+  Default
+  Specific
+}
+
+enum BloodGroup {
+  AP
+  BP
+  AN
+  BN
+  ABP
+  ABN
+  OP
+  ON
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum MaritalStatus {
+  SINGLE
+  MARRIED
+  SEPARATED
+}
+
+// CRM
+
+model LeadCategories {
+  id         Int          @id @default(autoincrement())
+  name       String
+  code       String?
+  Company    Company?     @relation(fields: [companyId], references: [id])
+  companyId  Int?
+  active     Boolean      @default(true)
+  LeadImport LeadImport[]
+}
+
+model Heading {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  active      Boolean       @default(true)
+  LeadDetails LeadDetails[]
+}
+
+model LeadImport {
+  id               Int             @id @default(autoincrement())
+  LeadMaster       LeadMaster[]
+  LeadCategories   LeadCategories? @relation(fields: [leadCategoriesId], references: [id])
+  leadCategoriesId Int?
+}
+
+model LeadMaster {
+  id               Int                @id @default(autoincrement())
+  LeadDetails      LeadDetails[]
+  LeadImport       LeadImport         @relation(fields: [leadImportId], references: [id])
+  leadImportId     Int
+  AllocationDetail AllocationDetail[]
+  CallLog          CallLog[]
+  report           CallLogStatus?  
+  followupDate     DateTime? @db.Date
+  comment          String?
+   }
+
+model LeadDetails {
+  id           Int        @id @default(autoincrement())
+  LeadMaster   LeadMaster @relation(fields: [leadMasterId], references: [id])
+  leadMasterId Int
+  Heading      Heading    @relation(fields: [headingId], references: [id])
+  headingId    Int
+  data         String?
+
+}
+
+model Allocation {
+  id               Int                @id @default(autoincrement())
+  allocationDetail AllocationDetail[]
+  createdBy        User               @relation("createdBy", fields: [createdById], references: [id])
+  createdById      Int
+  userId           Int
+  data             String?
+  User             User               @relation(fields: [userId], references: [id])
+}
+
+model AllocationDetail {
+  id               Int             @id @default(autoincrement())
+  LeadMaster       LeadMaster      @relation(fields: [leadMasterId], references: [id])
+  leadMasterId     Int
+  AllocationId     Int
+  Allocation       Allocation      @relation(fields: [AllocationId], references: [id])
+}
+model CallLog {
+  id               Int             @id @default(autoincrement())
+  LeadMaster       LeadMaster      @relation(fields: [leadMasterId], references: [id])
+  leadMasterId     Int
+  comment          String?
+  followupDate     DateTime?
+  report           CallLogStatus?
+}
+enum CallLogStatus {
+  INTERESTED
+  NOTINTERESTED
+  FOLLOWUP
+ }
+
+

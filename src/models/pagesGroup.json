@@ -1,0 +1,15 @@
+[
+    {
+        "id": 1,
+        "type": "Masters",
+        "name": "COMMON",
+        "active": true
+    },
+    {
+        "id": 2,
+        "type": "Masters",
+        "name": "COMMON",
+        "active": true
+    }
+
+]

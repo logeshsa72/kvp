@@ -1,0 +1,74 @@
+[
+    {
+        "id": 1,
+        "name": "COUNTRY MASTER",
+        "link": "COUNTRYMASTER",
+        "type": "Masters",
+        "active": true,
+        "pageGroupId": 2
+    },
+    {
+        "id": 2,
+        "name": "EMPLOYEE MASTER",
+        "link": "EMPLOYEEMASTER",
+        "type": "Masters",
+        "active": true,
+        "pageGroupId": 2
+    },
+    {
+        "id": 3,
+        "name": "STATE MASTER",
+        "link": "STATEMASTER",
+        "type": "Masters",
+        "active": true,
+        "pageGroupId": 2
+    },
+    {
+        "id": 4,
+        "name": "CITY MASTER",
+        "link": "CITYMASTER",
+        "type": "Masters",
+        "active": true,
+        "pageGroupId": 2
+    },
+    {
+        "id": 5,
+        "name": "DEPARTMENT MASTER",
+        "link": "DEPARTMENTMASTER",
+        "type": "Masters",
+        "active": true,
+        "pageGroupId": 2
+    },
+    {
+        "id": 6,
+        "name": "USERS & ROLES",
+        "link": "/USERSANDROLES",
+        "type": "AdminAccess",
+        "active": true,
+        "pageGroupId": null
+    },
+    {
+        "id": 7,
+        "name": "FIN YEAR MASTER",
+        "link": "FINYEARMASTER",
+        "type": "Masters",
+        "active": true,
+        "pageGroupId": 2
+    },
+    {
+        "id": 8,
+        "name": "EMPLOYEE CATEGORY MASTER",
+        "link": "EMPLOYEECATEGORYREPORT",
+        "type": "Masters",
+        "active": true,
+        "pageGroupId": 2
+    },
+    {
+        "id": 9,
+        "name": "CONTROL PANEL",
+        "link": "/CONTROLPANEL",
+        "type": "AdminAccess",
+        "active": true,
+        "pageGroupId": null
+    }
+]
